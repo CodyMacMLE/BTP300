@@ -36,7 +36,7 @@
       selectedLauncherIdentifier = "Xcode.DebuggerFoundation.Launcher.LLDB"
       launchStyle = "0"
       useCustomWorkingDirectory = "YES"
-      customWorkingDirectory = "/Users/codymacdonald/Desktop/School/Year 2/BTP 300/Exercise 1/Ex01"
+      customWorkingDirectory = "/Users/codymacdonald/Documents/GitHub/BTP300/BTP300-W1"
       ignoresPersistentStateOnLaunch = "NO"
       debugDocumentVersioning = "YES"
       debugServiceExtension = "internal"

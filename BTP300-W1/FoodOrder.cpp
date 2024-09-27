@@ -65,6 +65,7 @@ namespace seneca {
 			// Copying description
 			std::string descriptionInput;
 			std::getline(in, descriptionInput, ',');
+            delete [] m_foodDescription;
 			m_foodDescription = new char[descriptionInput.length() + 1];
 			strcpy(m_foodDescription, descriptionInput.c_str());
 
