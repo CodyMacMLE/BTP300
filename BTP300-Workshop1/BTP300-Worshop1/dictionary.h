@@ -70,7 +70,7 @@ namespace seneca {
         /// cannot be open, this function puts the current instance in an empty state.
         /// </summary>
         Dictionary(const char* filename);
-        
+
         /// <summary>
         /// Copy Constructor
         /// </summary>
@@ -90,7 +90,7 @@ namespace seneca {
         /// Move Assignment
         /// </summary>
         Dictionary& operator=(Dictionary&& src);
-        
+
         /// <summary>
         /// Default Destructor
         /// </summary>

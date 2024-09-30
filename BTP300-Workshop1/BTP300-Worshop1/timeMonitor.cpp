@@ -30,7 +30,7 @@ namespace seneca {
         // End clock time
         m_endTime = std::chrono::steady_clock::now();
         // Casting clock time difference into a duration object
-        std::chrono::duration<double> timeSpan = duration_cast<std::chrono::duration<double>>(m_endTime - m_startTime);
+        std::chrono::duration<double> timeSpan = std::chrono::duration_cast<std::chrono::duration<double>>(m_endTime - m_startTime);
         // Casting duration to nanoseconds duration type
         std::chrono::nanoseconds nanoseconds = std::chrono::duration_cast<std::chrono::nanoseconds>(timeSpan);
         return Event(m_name, nanoseconds);

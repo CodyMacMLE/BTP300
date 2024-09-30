@@ -32,11 +32,11 @@ namespace seneca {
         if(this != &src) {
             // 2) Clean memory
             delete [] m_events;
-            // 3) Shallow Copy Static(No static members)
-            // 4) Shallow Copy Dynamic
+            // 4) Shallow Copy
+            m_arrSize = src.m_arrSize;
             m_events = src.m_events;
             // 5) Delete old ptr
-            delete [] src.m_events;
+            src.m_events = nullptr;
         }
         return *this;
     }
@@ -49,24 +49,30 @@ namespace seneca {
     }
     
     /// <summary>
+    /// resize array + 1
+    /// </summary>
+    void Logger::resizeArray() {
+        // create tmp array and move
+        Event* tmp = new Event[m_arrSize];
+        for (auto i = 0; i < m_arrSize; i++)
+            tmp[i] = m_events[i];
+        // clean old array
+        delete [] m_events;
+        // resize array and copy old array
+        m_events = new Event[m_arrSize + 1];
+        for (auto i = 0; i < m_arrSize; i++)
+            m_events[i] = tmp[i];
+        // increment array size
+        m_arrSize++;
+        delete [] tmp;
+    }
+    
+    /// <summary>
     /// Add to the array a copy of the event received as a parameter (resizing the array if necessary).
     /// </summary>
     void Logger::addEvent(const Event& event){
-        // Creating new array of events with new event
-        Event* tmp = new Event[m_arrSize + 1];
-        // Copying array content + new event to tmp array
-        if (m_arrSize == 0)
-            tmp[m_arrSize++] = event; // Incrementing array size after call
-        else {
-            tmp = m_events;
-            tmp[m_arrSize++] = event;
-        }
-        // Clearing old array
-        delete [] m_events;
-        // Copy new array to object
-        this->m_events = new Event[m_arrSize];
-        for (auto i = 0; i < m_arrSize; ++i)
-            this->m_events[i] = tmp[i];                                 // is copied into m_events, but when it goes out of scope both go null
+        this->resizeArray();
+        m_events[m_arrSize - 1] = event;
     }
     
     /// <summary>

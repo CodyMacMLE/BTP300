@@ -88,7 +88,7 @@ int main(int argc, char** argv)
 		dict.searchWord("Apple");
 		dict2.searchWord("Ywis");
 		std::cout << "~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\n\n";
-	} // dict loses data as dict2 goes out of scope
+	}
 
 	{
 		// TEST: Copy Assignment Operator

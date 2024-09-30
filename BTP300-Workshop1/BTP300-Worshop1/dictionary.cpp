@@ -8,6 +8,7 @@
 #include <string>
 #include <iostream>
 #include <iomanip>
+#include <vector>
 #include "dictionary.h"
 
 namespace seneca {
@@ -28,6 +29,9 @@ namespace seneca {
         }
         else if (m_pos == PartOfSpeech::Adverb) {
             pos = " (adverb)";
+        }
+        else if (m_pos == PartOfSpeech::Verb) {
+            pos = " (verb)";
         }
         else if (m_pos == PartOfSpeech::Preposition) {
             pos = " (preposition)";
@@ -52,7 +56,7 @@ namespace seneca {
         m_arrLength = 0;
     }
     
-/*
+
     /// <summary>
     /// Loads from the file specified as parameter the collection of words, allocate enough memory (but
     /// no more) for the array to store the data, and then load all the words into the array. If the file
@@ -66,8 +70,7 @@ namespace seneca {
             file.open(filename);
             if (file.good()){
                 // Counting data lines
-                while (!file.eof()){
-                    std::getline(file, buffer);
+                while (std::getline(file, buffer)){
                     m_arrLength++;
                 }
                 // Reset file position and flags
@@ -123,11 +126,12 @@ namespace seneca {
         else
             m_words = nullptr;
     }
-    
+
     /// <summary>
     /// Copy Constructor
     /// </summary>
     Dictionary::Dictionary(const Dictionary& src) {
+        m_words = nullptr;
         *this = src;
     }
     
@@ -138,15 +142,17 @@ namespace seneca {
         // Self-assign guard
         if(this != &src) {
             // Clean mem
-            delete [] m_words;
+            delete[] m_words;
             // shallow copy
-            m_arrLength = src.m_arrLength;
             // deep copy
-            if (m_arrLength > 0) {
+            if (src.m_words && src.m_arrLength > 0) {
+                m_arrLength = src.m_arrLength;
+                m_words = new Word[m_arrLength];
                 for (auto i = 0; i < m_arrLength; ++i)
                     m_words[i] = src.m_words[i];
             } else {
                 m_words = nullptr;
+                m_arrLength = 0;
             }
         }
         return *this;
@@ -156,6 +162,7 @@ namespace seneca {
     /// Move Constructor
     /// </summary>
     Dictionary::Dictionary(Dictionary&& src) {
+        m_words = nullptr;
         *this = std::move(src);
     }
     
@@ -163,20 +170,20 @@ namespace seneca {
     /// Move Assignment
     /// </summary>
     Dictionary& Dictionary::operator=(Dictionary&& src){
-        // Self-assign guard
+        // 1) Self-assign guard
         if(this != &src) {
-            // Clean mem
+            // 2) Clean memory
             delete [] m_words;
-            // shallow copy (static)
+            
+            // 3) Shallow Copy
             m_arrLength = src.m_arrLength;
-            // shallow copy (dynamic)
             m_words = src.m_words;
-            // delete old pointers
-            delete [] src.m_words;
+            // old pointers to null
+            src.m_words = nullptr;
         }
         return *this;
     }
-*/
+
     /// <summary>
     /// Default Destructor
     /// </summary>
@@ -193,13 +200,17 @@ namespace seneca {
         bool wordExists = false;
         int wordFirstIndex = -1;
         
-        // Finding if a match is found
-        for (auto i = 0; i < m_arrLength && !wordExists; ++i) {
-            if (wordString.compare(this->m_words[i].m_word) == 0) {
-                wordFirstIndex = i;
-                wordExists = true;
+        if (m_words != nullptr) {
+            // Finding if a match is found
+            for (auto i = 0; i < m_arrLength && !wordExists; ++i) {
+                if (wordString.compare(this->m_words[i].m_word) == 0) {
+                    wordFirstIndex = i;
+                    wordExists = true;
+                }
             }
         }
+        
+       
         
         // If Word Match Exists
         if(wordExists) {
@@ -214,25 +225,25 @@ namespace seneca {
             } else {
                 int wordWidth = int(wordString.length());
                 int matchCount = 1;
-                for (auto i = wordFirstIndex + 1; i < m_arrLength && wordExists; i++) {
-                    if (wordString.compare(this->m_words[i].m_word) != 0) {
-                        wordExists = false;
-                    } else {
+                std::vector<int> matchedIndexes;
+                for (auto i = wordFirstIndex + 1; i < m_arrLength; i++) {
+                    if (wordString.compare(this->m_words[i].m_word) == 0) {
+                        matchedIndexes.push_back(i);
                         matchCount++;
                     }
                 }
                 if (!g_settings.m_verbose) {
                     std::cout << word << " - " << m_words[wordFirstIndex].m_definition << std::endl;
                     if (matchCount > 1) {
-                        for (auto i = wordFirstIndex + 1; i < (wordFirstIndex + matchCount); ++i) {
-                            std::cout << std::setw(wordWidth) << "" << " - " << m_words[i].m_definition << std::endl;
+                        for (auto i = 0; i < matchedIndexes.size(); ++i) {
+                            std::cout << std::setw(wordWidth) << "" << " - " << m_words[matchedIndexes[i]].m_definition << std::endl;
                         }
                     }
                 } else {
                     std::cout << word << " -" << m_words[wordFirstIndex].getPos() << " "<< m_words[wordFirstIndex].m_definition << std::endl;
                     if (matchCount > 1) {
-                        for (auto i = wordFirstIndex + 1; i < (wordFirstIndex + matchCount); ++i) {
-                            std::cout << std::setw(wordWidth)<< "" << " -" << m_words[i].getPos() << " "<< m_words[i].m_definition << std::endl;
+                        for (auto i = 0; i < matchedIndexes.size(); ++i) {
+                            std::cout << std::setw(wordWidth)<< "" << " -" << m_words[matchedIndexes[i]].getPos() << " "<< m_words[matchedIndexes[i]].m_definition << std::endl;
                         }
                     }
                 }

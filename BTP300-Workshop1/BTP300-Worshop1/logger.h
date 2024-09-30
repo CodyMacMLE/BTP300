@@ -9,6 +9,7 @@
 #define SENECA_LOGGER_H
 
 #include <iostream>
+#include <chrono>
 #include "event.h"
 
 namespace seneca {
@@ -53,6 +54,11 @@ namespace seneca {
         /// Default destructor.
         /// </summary>
         ~Logger();
+        
+        /// <summary>
+        /// resize array + 1
+        /// </summary>
+        void resizeArray();
         
         /// <summary>
         /// Add to the array a copy of the event received as a parameter (resizing the array if necessary).
